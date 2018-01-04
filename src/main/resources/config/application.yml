@@ -103,3 +103,6 @@ jhipster:
 # ===================================================================
 
 application:
+
+
+myExample.ribbon.listOfServers: localhost:1337

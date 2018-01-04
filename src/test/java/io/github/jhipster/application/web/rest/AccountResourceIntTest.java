@@ -1,7 +1,7 @@
 package io.github.jhipster.application.web.rest;
 
-import io.github.jhipster.application.config.Constants;
 import io.github.jhipster.application.JhipsterSampleApplicationApp;
+import io.github.jhipster.application.config.Constants;
 import io.github.jhipster.application.domain.Authority;
 import io.github.jhipster.application.domain.PersistentToken;
 import io.github.jhipster.application.domain.User;
@@ -10,18 +10,16 @@ import io.github.jhipster.application.repository.PersistentTokenRepository;
 import io.github.jhipster.application.repository.UserRepository;
 import io.github.jhipster.application.security.AuthoritiesConstants;
 import io.github.jhipster.application.service.MailService;
+import io.github.jhipster.application.service.UserService;
 import io.github.jhipster.application.service.dto.UserDTO;
 import io.github.jhipster.application.web.rest.errors.ExceptionTranslator;
 import io.github.jhipster.application.web.rest.vm.KeyAndPasswordVM;
 import io.github.jhipster.application.web.rest.vm.ManagedUserVM;
-import io.github.jhipster.application.service.UserService;
 import org.apache.commons.lang3.RandomStringUtils;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -30,17 +28,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Instant;
 import java.time.LocalDate;
-
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -87,20 +85,6 @@ public class AccountResourceIntTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        doNothing().when(mockMailService).sendActivationEmail(anyObject());
-        AccountResource accountResource =
-            new AccountResource(userRepository, userService, mockMailService, persistentTokenRepository);
-
-        AccountResource accountUserMockResource =
-            new AccountResource(userRepository, mockUserService, mockMailService, persistentTokenRepository);
-        this.restMvc = MockMvcBuilders.standaloneSetup(accountResource)
-            .setMessageConverters(httpMessageConverters)
-            .setControllerAdvice(exceptionTranslator)
-            .build();
-        this.restUserMockMvc = MockMvcBuilders.standaloneSetup(accountUserMockResource)
-            .setControllerAdvice(exceptionTranslator)
-            .build();
     }
 
     @Test

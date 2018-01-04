@@ -1,30 +1,31 @@
 package io.github.jhipster.application.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-
 import io.github.jhipster.application.domain.PersistentToken;
-import io.github.jhipster.application.repository.PersistentTokenRepository;
 import io.github.jhipster.application.domain.User;
+import io.github.jhipster.application.repository.PersistentTokenRepository;
 import io.github.jhipster.application.repository.UserRepository;
 import io.github.jhipster.application.security.SecurityUtils;
 import io.github.jhipster.application.service.MailService;
+import io.github.jhipster.application.service.SimpleService;
 import io.github.jhipster.application.service.UserService;
 import io.github.jhipster.application.service.dto.UserDTO;
 import io.github.jhipster.application.web.rest.errors.*;
 import io.github.jhipster.application.web.rest.vm.KeyAndPasswordVM;
 import io.github.jhipster.application.web.rest.vm.ManagedUserVM;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * REST controller for managing the current user's account.
@@ -43,12 +44,19 @@ public class AccountResource {
 
     private final PersistentTokenRepository persistentTokenRepository;
 
-    public AccountResource(UserRepository userRepository, UserService userService, MailService mailService, PersistentTokenRepository persistentTokenRepository) {
+    private SimpleService simpleService;
+
+    public AccountResource(UserRepository userRepository,
+                           UserService userService,
+                           MailService mailService,
+                           PersistentTokenRepository persistentTokenRepository,
+                           SimpleService simpleService) {
 
         this.userRepository = userRepository;
         this.userService = userService;
         this.mailService = mailService;
         this.persistentTokenRepository = persistentTokenRepository;
+        this.simpleService = simpleService;
     }
 
     /**
@@ -62,14 +70,8 @@ public class AccountResource {
     @PostMapping("/register")
     @Timed
     @ResponseStatus(HttpStatus.CREATED)
-    public void registerAccount(@Valid @RequestBody ManagedUserVM managedUserVM) {
-        if (!checkPasswordLength(managedUserVM.getPassword())) {
-            throw new InvalidPasswordException();
-        }
-        userRepository.findOneByLogin(managedUserVM.getLogin().toLowerCase()).ifPresent(u -> {throw new LoginAlreadyUsedException();});
-        userRepository.findOneByEmailIgnoreCase(managedUserVM.getEmail()).ifPresent(u -> {throw new EmailAlreadyUsedException();});
-        User user = userService.registerUser(managedUserVM, managedUserVM.getPassword());
-        mailService.sendActivationEmail(user);
+    public ResponseEntity<String> registerAccount(@Valid @RequestBody ManagedUserVM managedUserVM) {
+        return ResponseEntity.ok(this.simpleService.getText());
     }
 
     /**
